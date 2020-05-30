@@ -1,0 +1,7 @@
+.available_ip
+.saved
+.wg0.conf
+server_private.key
+server_public.key
+users/
+wg.def
