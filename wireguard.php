@@ -1,11 +1,11 @@
-<html>
-<head><title>Wireguard interface</title></head>
-<body>
-
 <?php
 /*
  * front-ed to wg_config (https://github.com/alexandregz/wg_config) 
  */
+
+
+
+
 
 // ini_set('display_errors', true);
 // error_reporting(E_ALL);
@@ -30,10 +30,37 @@ $commands = array(
 	'viewuser' => 'sudo '.$path_wg_config.'user.sh -v '
 );
 
+
 $accion = $_REQUEST['accion'];
 $usuario = $_REQUEST['usuario'];
 
 
+if(isset($_REQUEST["user_download_file"])){
+    $file = $path_wg_config.'users/'.$_REQUEST["user_download_file"].'/client.conf';
+
+    if(!is_file($file) || !is_readable($file)) die('File does not exists. Check path again.');
+
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="'.basename($file).'"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($file));
+    readfile($file);
+    exit;
+}
+
+?>
+
+
+
+
+<html>
+<head><title>Wireguard interface</title></head>
+<body>
+
+<?php
 if(isset($commands[$accion])) {
 
 
@@ -41,11 +68,24 @@ if(isset($commands[$accion])) {
 	// 1) cat de users/USER/client.conf
 	// 2) incrustamos qrcode de users/USER/CLIENT.png
 	if($accion == 'viewuser') {
-		$output_config = shell_exec('/bin/cat '.$path_wg_config."users/$usuario/client.conf");
-		$imagedata = file_get_contents($path_wg_config."users/$usuario/$usuario.png");
+		if(file_exists($path_wg_config."users/$usuario/client.conf")) {
+			$output_config = shell_exec('/bin/cat '.$path_wg_config."users/$usuario/client.conf");
+			$imagedata = file_get_contents($path_wg_config."users/$usuario/$usuario.png");
 
-		echo "config:<hr><pre>\n$output_config\n</pre>";
-		echo "<img src='data:image/png;base64,".base64_encode($imagedata)."'>";
+			echo "config:<hr><pre>\n$output_config\n</pre>";
+			echo "<img src='data:image/png;base64,".base64_encode($imagedata)."'>";
+
+			// form to download file
+			?>
+<form method="POST"">
+    <input type="hidden" name="user_download_file" value="<?php echo $usuario;?>" />
+    <input type="submit" value="Download config file" />
+</form>
+			<?php
+		}
+		else{
+			echo "ERRO: Nom existe o usuario $usuario! (OS case-sensitive??) <br />";
+		}
 
 	}
 	else{
