@@ -22,3 +22,4 @@ www-data ALL=NOPASSWD: /home/pi/wireguard/wg_config/user.sh
 www-data ALL=NOPASSWD: /usr/bin/wg
 ```
 
+![screenshot wireguard.php](1.png)
