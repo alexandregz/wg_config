@@ -1,0 +1,4 @@
+# permite empregar sudo ./user.sh de wg_config
+#
+www-data ALL=NOPASSWD: /home/pi/wireguard/wg_config/user.sh
+www-data ALL=NOPASSWD: /usr/bin/wg
